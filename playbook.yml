@@ -1,0 +1,22 @@
+---
+- hosts: web
+  vars_files:
+    - vars.yml
+  become: true
+    tasks:
+      - name: Install system packages
+        apt: pkg={{ item }} state=installed update_cache=true
+        with_items: "{{ system_packages }}"
+
+      - name: make sure postgresql server is running
+        service: name=postgresql state=started
+
+      - name: create database
+        become_user: postgres
+        postgresql_db: name={{ dbname }}
+
+      - name: create database user
+        become_user: postgres
+        postgresql_user: db={{ dbname }} name={{ dbuser }} password={{ dbpassword }} priv=ALL
+
+-include: deploy.yml        

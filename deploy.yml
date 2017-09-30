@@ -1,0 +1,17 @@
+---
+- hosts: web
+  vars_files:
+    - vars.yml
+  become: yes
+
+  tasks:
+    - name: install python packages
+      pip: requirements=requirements.txt
+
+    - name: copy settings.py config
+      template: src=template/settings.py.j2 dest=djangobasico/settings.py
+
+    - name: initial database database
+      django_manage:
+        command: loaddata
+        fixtures: db.fixture.json
